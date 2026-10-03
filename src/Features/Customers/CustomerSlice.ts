@@ -33,8 +33,8 @@ const customerSlice = createSlice({
         };
       },
     },
-    updateFullName: (state, action: PayloadAction<{ fullName: string }>) => {
-      state.fullName = action.payload.fullName;
+    updateFullName: (state, action: PayloadAction<string>) => {
+      state.fullName = action.payload;
     },
   },
 });

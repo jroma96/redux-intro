@@ -10,25 +10,32 @@ const accountSlice = createSlice({
   name: "account",
   initialState: accountInitialState,
   reducers: {
-    deposit: (state, action: PayloadAction<{ amount: number }>) => {
-      state.balance = state.balance + action.payload.amount;
+    deposit: (state, action: PayloadAction<number>) => {
+      state.balance = state.balance + action.payload;
     },
-    withdraw: (state, action: PayloadAction<{ amount: number }>) => {
-      state.balance = state.balance - action.payload.amount;
+    withdraw: (state, action: PayloadAction<number>) => {
+      state.balance = state.balance - action.payload;
     },
-    requestLoan: (
-      state,
-      action: PayloadAction<{ amount: number; purpose: string }>,
-    ) => {
-      if (state.loan > 0) return;
-      state.loan = action.payload.amount;
-      state.loanPurpose = action.payload.purpose;
-      state.balance = state.balance + action.payload.amount;
+    requestLoan: {
+      reducer: (
+        state,
+        action: PayloadAction<{ amount: number; purpose: string }>,
+      ) => {
+        if (state.loan > 0) return;
+        state.loan = action.payload.amount;
+        state.loanPurpose = action.payload.purpose;
+        state.balance = state.balance + action.payload.amount;
+      },
+      prepare(amount: number, purpose: string) {
+        return {
+          payload: { amount, purpose },
+        };
+      },
     },
     payLoan: (state) => {
+      state.balance = state.balance - state.loan;
       state.loan = 0;
       state.loanPurpose = "";
-      state.balance = state.balance - state.loan;
     },
   },
 });
