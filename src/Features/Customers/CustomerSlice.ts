@@ -1,48 +1,43 @@
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+
 const customerInitialState = {
   fullName: "",
   nationalId: 0,
   createdAt: "",
 };
 
-type customerAction =
-  | {
-      type: "customer/createCustomer";
-      payload: { fullName: string; nationalId: number; createdAt: string };
-    }
-  | {
-      type: "customer/updateFullName";
-      payload: { fullName: string };
-    };
+const customerSlice = createSlice({
+  name: "customer",
+  initialState: customerInitialState,
+  reducers: {
+    createCustomer: {
+      reducer: (
+        state,
+        action: PayloadAction<{
+          fullName: string;
+          nationalId: number;
+          createdAt: string;
+        }>,
+      ) => {
+        state.fullName = action.payload.fullName;
+        state.nationalId = action.payload.nationalId;
+        state.createdAt = new Date().toISOString();
+      },
+      prepare(fullName: string, nationalId: number) {
+        return {
+          payload: {
+            fullName,
+            nationalId,
+            createdAt: new Date().toISOString(),
+          },
+        };
+      },
+    },
+    updateFullName: (state, action: PayloadAction<{ fullName: string }>) => {
+      state.fullName = action.payload.fullName;
+    },
+  },
+});
 
-export default function customerReducer(
-  state = customerInitialState,
-  action: customerAction,
-) {
-  switch (action.type) {
-    case "customer/createCustomer":
-      return {
-        ...state,
-        fullName: action.payload.fullName,
-        nationalId: action.payload.nationalId,
-        createdAt: action.payload.createdAt,
-      };
-    case "customer/updateFullName":
-      return {
-        ...state,
-        fullName: action.payload.fullName,
-      };
-    default:
-      return state;
-  }
-}
-
-export function createCustomer(fullName: string, nationalId: number) {
-  return {
-    type: "customer/createCustomer",
-    payload: { fullName, nationalId, createdAt: new Date().toISOString() },
-  };
-}
-
-export function updateFullName(fullName: string) {
-  return { type: "customer/updateFullName", payload: { fullName } };
-}
+export const { createCustomer, updateFullName } = customerSlice.actions;
+export default customerSlice;
